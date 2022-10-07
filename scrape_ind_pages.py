@@ -3,6 +3,151 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+
+def present_tense_verb(search_table):
+    present_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
+                                          'english_word'])
+
+    id_list = {'AP-ms': ['singular', 'masculine'], 'AP-fs': ['singular', 'feminine'],
+               'AP-mp': ['plural', 'masculine'], 'AP-fp': ['plural', 'feminine']}
+    verb_form = 'present'
+    person = 1
+
+    for i in range(len(id_list)):
+        index = list(id_list.keys())[i]
+        form = id_list[index][0]
+        gender = id_list[index][1]
+        hebrew_word = search_table[i].findAll('div', {'id': str(index)})[0].select('span')[0].text
+        english_word = search_table[i].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
+            0].text
+
+        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1,-1)
+        temp_df = pd.DataFrame(temp_array, columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
+                                                    'english_word'])
+        present_table = pd.concat([present_table, temp_df])
+
+    return present_table
+
+
+def past_tense_verb(search_table):
+    past_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
+                                       'english_word'])
+    id_list = {'PERF-1s': ['singular', ['masculine', 'feminine']],
+               'PERF-1p': ['plural', ['masculine', 'feminine']],
+               'PERF-2ms': ['singular', 'masculine'], 'PERF-2fs': ['singular', 'feminine'],
+               'PERF-2mp': ['plural', 'masculine'], 'PERF-2fp': ['plural', 'feminine'],
+               'PERF-3ms': ['singular', 'masculine'], 'PERF-3fs': ['singular', 'feminine'],
+               'PERF-3p': ['plural', ['masculine', 'feminine']]}
+    verb_form = 'past'
+    person_list = [1, 2, 3]
+
+    for i in range(len(person_list)):
+        for x in range(len(id_list)):
+            person = person_list[i]
+            index = list(id_list.keys())[x]
+            form = id_list[index][0]
+            if len(id_list[index][1]) == 1:
+                gender = id_list[index][1]
+            elif len(id_list[index][1]) == 2:
+                gender = id_list[index][1][0]
+            hebrew_word = search_table[i+4].findAll('div', {'id': str(index)})[0].select('span')[0].text
+            english_word = search_table[i+4].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
+                0].text
+            temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1,-1)
+            temp_df = pd.DataFrame(temp_array,
+                                   columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
+                                            'english_word'])
+            past_table = pd.concat([past_table, temp_df])
+            if index in ['PERF-1s', 'PERF-1p', 'PERF-3p']:
+                # for feminine
+                gender = id_list[index][1][1]
+                hebrew_word = search_table[i+4].findAll('div', {'id': str(index)})[0].select('span')[0].text
+                english_word = \
+                    search_table[i+4].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
+                        0].text
+                temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1,-1)
+                temp_df = pd.DataFrame(temp_array,
+                                       columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
+                                                'english_word'])
+                past_table = pd.concat([past_table, temp_df])
+
+    return past_table
+
+
+def future_tense_verb(search_table):
+    future_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
+                                         'english_word'])
+    id_list = {'IMPF-1s': ['singular', ['masculine', 'feminine']],
+               'IMPF-1p': ['plural', ['masculine', 'feminine']],
+               'IMPF-2ms': ['singular', 'masculine'], 'IMPF-2fs': ['singular', 'feminine'],
+               'IMPF-2mp': ['plural', 'masculine'], 'IMPF-2fp': ['plural', 'feminine'],
+               'IMPF-3ms': ['singular', 'masculine'], 'IMPF-3fs': ['singular', 'feminine'],
+               'IMPF-3mp': ['plural', 'masculine'], 'IMPF-3fp': ['singular', 'feminine']}
+    verb_form = 'future'
+    person_list = [1, 2, 3]
+
+    for i in person_list:
+        for x in range(len(id_list)):
+            person = person_list[i]
+            index = list(id_list.keys())[x]
+            form = id_list[index][0]
+            if len(id_list[index][1]) == 1:
+                gender = id_list[index][1]
+            elif len(id_list[index][1]) == 2:
+                gender = id_list[index][1][0]
+            hebrew_word = search_table[i].findAll('div', {'id': str(index)})[0].select('span')[0].text
+            english_word = search_table[i].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
+                0].text
+            temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1,-1)
+            temp_df = pd.DataFrame(temp_array,
+                                   columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
+                                            'english_word'])
+            future_table = pd.concat([future_table, temp_df])
+            if index in ['IMPF-1s', 'IMPF-1p']:
+                # for feminine
+                gender = id_list[index][1][1]
+                hebrew_word = search_table[i].findAll('div', {'id': str(index)})[0].select('span')[0].text
+                english_word = \
+                    search_table[i].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
+                        0].text
+                temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1,-1)
+                temp_df = pd.DataFrame(temp_array,
+                                       columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
+                                                'english_word'])
+                future_table = pd.concat([future_table, temp_df])
+
+    return future_table
+
+
+def imperative_tense_verb(search_table):
+    imperative_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
+                                          'english_word'])
+
+    id_list = {'IMP-2ms': ['singular', 'masculine'], 'IMP-2fs': ['singular', 'feminine'],
+               'IMP-2mp': ['plural', 'masculine'], 'IMP-2fp': ['plural', 'feminine']}
+    verb_form = 'imperative'
+    person = 2
+
+    for i in range(len(id_list)):
+        index = list(id_list.keys())[i]
+        form = id_list[index][0]
+        gender = id_list[index][1]
+        hebrew_word = search_table[i].findAll('div', {'id': str(index)})[0].select('span')[0].text
+        english_word = search_table[i].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
+            0].text
+
+        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1,-1)
+        temp_df = pd.DataFrame(temp_array, columns=['verb_form', 'person', 'form', 'gender', 'gender', 'hebrew_word',
+                                                    'english_word'])
+        imperative_table = imperative_table.concat([imperative_table, temp_df])
+
+    return imperative_table
+
+
+
+
+
+
 user_agent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.37"
 url = 'https://www.pealim.com'
 
@@ -261,72 +406,8 @@ for index, row in pealim_database.iterrows():
         div_infinitive = search_table[-1].findAll('div', {'id': 'INF-L'})
         infinitive_word = div_infinitive[-1].findAll('span', {'class': 'menukad'})[0].text
 
+        present_table = present_tense_verb(search_table)
+        past_table = past_tense_verb(search_table)
+        future_table = future_tense_verb(search_table)
+        imperative_table = imperative_tense_verb(search_table)
 
-def present_tense_verb(search_table):
-    present_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'gender', 'hebrew_word',
-                                          'english_word'])
-
-    id_list = {'AP-ms': ['singular', 'masculine'], 'AP-fs': ['singular', 'feminine'],
-               'AP-mp': ['plural', 'masculine'], 'AP-fp': ['plural', 'feminine']}
-    verb_form = 'present'
-    person = 1
-
-    for i in range(len(id_list)):
-        index = list(id_list.keys())[i]
-        form = id_list[index][0]
-        gender = id_list[index][1]
-        hebrew_word = search_table[i].findAll('div', {'id': str(index)})[0].select('span')[0].text
-        english_word = search_table[i].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
-            0].text
-
-        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word])
-        temp_df = pd.DataFrame(temp_array, columns=['verb_form', 'person', 'form', 'gender', 'gender', 'hebrew_word',
-                                                    'english_word'])
-        present_table = present_table.concat([present_table, temp_df])
-
-    return present_table
-
-
-def past_tense_verb(search_table):
-    past_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'gender', 'hebrew_word',
-                                       'english_word'])
-    id_list = {'PERF-1s': ['singular', ['masculine', 'feminine']],
-               'PERF-1p': ['plural', ['masculine', 'feminine']],
-               'PERF-2ms': ['singular', 'masculine'], 'PERF-2fs': ['singular', 'feminine'],
-               'PERF-2mp': ['plural', 'masculine'], 'PERF-2fp': ['plural', 'feminine'],
-               'PERF-3ms': ['singular', 'masculine'], 'PERF-3fs': ['singular', 'feminine'],
-               'PERF-3p': ['plural', ['masculine', 'feminine']]}
-    verb_form = 'past'
-    person_list = [1, 2, 3]
-
-    for i in person_list:
-        for x in range(len(id_list)):
-            person = person_list[i]
-            index = list(id_list.keys())[x]
-            form = id_list[index][0]
-            if len(id_list[index][1]) == 1:
-                gender = id_list[index][1]
-            elif len(id_list[index][1]) == 2:
-                gender = id_list[index][1][0]
-            hebrew_word = search_table[i].findAll('div', {'id': str(index)})[0].select('span')[0].text
-            english_word = search_table[i].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
-                0].text
-            temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word])
-            temp_df = pd.DataFrame(temp_array,
-                                   columns=['verb_form', 'person', 'form', 'gender', 'gender', 'hebrew_word',
-                                            'english_word'])
-            past_table = past_table.concat([past_table, temp_df])
-            if x == 0 or x == 1:
-                # for feminine
-                gender = id_list[index][1][1]
-                hebrew_word = search_table[i].findAll('div', {'id': str(index)})[0].select('span')[0].text
-                english_word = \
-                    search_table[i].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
-                        0].text
-                temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word])
-                temp_df = pd.DataFrame(temp_array,
-                                       columns=['verb_form', 'person', 'form', 'gender', 'gender', 'hebrew_word',
-                                                'english_word'])
-                past_table = past_table.concat([past_table, temp_df])
-
-    return past_table
