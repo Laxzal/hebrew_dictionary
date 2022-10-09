@@ -19,7 +19,7 @@ page_limit = soup.select('a[href*="?page="]')[-1].get('href')
 page_limit = int(page_limit.replace('?page=', ''))
 
 ###Acquire word, root, part of speech and meaning
-pealim_dataframe = pd.DataFrame(columns=['word', 'root', 'part_of_speech', 'meaning', 'link'])
+pealim_dataframe = pd.DataFrame(columns=['id', 'word', 'root', 'part_of_speech', 'meaning', 'link'])
 
 for page in range(page_number, page_limit + 1):
     time.sleep(1.5)
@@ -34,10 +34,10 @@ for page in range(page_number, page_limit + 1):
         part_of_speech = table[table_i].findAll('td')[2].text
         meaning = table[table_i].findAll('td', {'class': 'dict-meaning'})[0].text
         link = table[table_i].findAll('a')[0].get('href')
-        temp_array = np.array([hebrew_word, root, part_of_speech, meaning, link]).reshape(1, -1)
-        temp_df = pd.DataFrame(temp_array, columns=['word', 'root', 'part_of_speech', 'meaning', 'link'])
+        id_word = int(re.findall(r'(\d+)', table[table_i].findAll('a')[0].get('href'))[0])
+        temp_array = np.array([id_word, hebrew_word, root, part_of_speech, meaning, link]).reshape(1, -1)
+        temp_df = pd.DataFrame(temp_array, columns=['id', 'word', 'root', 'part_of_speech', 'meaning', 'link'])
 
         pealim_dataframe = pd.concat([pealim_dataframe, temp_df])
-
 
 pealim_dataframe.to_csv('pealim_database.csv', index=False)
