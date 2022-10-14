@@ -6,11 +6,12 @@ import requests
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter, Retry
 
-
 logging.basicConfig(level=logging.DEBUG)
+
+
 def present_tense_verb(search_table):
     present_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                          'english_word'])
+                                          'english_word','chaser'])
 
     id_list = {'AP-ms': ['singular', 'masculine'], 'AP-fs': ['singular', 'feminine'],
                'AP-mp': ['plural', 'masculine'], 'AP-fp': ['plural', 'feminine']}
@@ -24,10 +25,14 @@ def present_tense_verb(search_table):
         hebrew_word = search_table[i].findAll('div', {'id': str(index)})[0].select('span')[0].text
         english_word = search_table[i].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
             0].text
+        try:
+            chaser_word = search_table[i].select('span[class*=chaser]')[0].text.replace('~', '').strip()
+        except IndexError:
+            chaser_word = np.nan
 
-        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word,chaser_word]).reshape(1, -1)
         temp_df = pd.DataFrame(temp_array, columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                                    'english_word'])
+                                                    'english_word','chaser'])
         present_table = pd.concat([present_table, temp_df])
 
     return present_table
@@ -35,7 +40,7 @@ def present_tense_verb(search_table):
 
 def past_tense_verb(search_table):
     past_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                       'english_word'])
+                                       'english_word','chaser'])
     id_list = {'PERF-1s': [1, 'singular', ['masculine', 'feminine']],
                'PERF-1p': [1, 'plural', ['masculine', 'feminine']],
                'PERF-2ms': [2, 'singular', 'masculine'], 'PERF-2fs': [2, 'singular', 'feminine'],
@@ -58,10 +63,14 @@ def past_tense_verb(search_table):
         english_word = \
             search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
                 0].text
-        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+        try:
+            chaser_word = search_table[counter].select('span[class*=chaser]')[0].text.replace('~', '').strip()
+        except IndexError:
+            chaser_word = np.nan
+        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word, chaser_word]).reshape(1, -1)
         temp_df = pd.DataFrame(temp_array,
                                columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                        'english_word'])
+                                        'english_word','chaser'])
         past_table = pd.concat([past_table, temp_df])
         if index in ['PERF-1s', 'PERF-1p', 'PERF-3p']:
             # for feminine
@@ -71,10 +80,10 @@ def past_tense_verb(search_table):
                 search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div',
                                                                                     {'class': 'meaning'})[
                     0].text
-            temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+            temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word, chaser_word]).reshape(1, -1)
             temp_df = pd.DataFrame(temp_array,
                                    columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                            'english_word'])
+                                            'english_word','chaser'])
             past_table = pd.concat([past_table, temp_df])
         counter += 1
 
@@ -83,7 +92,7 @@ def past_tense_verb(search_table):
 
 def future_tense_verb(search_table):
     future_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                         'english_word'])
+                                         'english_word','chaser'])
     id_list = {'IMPF-1s': [1, 'singular', ['masculine', 'feminine']],
                'IMPF-1p': [1, 'plural', ['masculine', 'feminine']],
                'IMPF-2ms': [2, 'singular', 'masculine'], 'IMPF-2fs': [2, 'singular', 'feminine'],
@@ -103,10 +112,14 @@ def future_tense_verb(search_table):
         hebrew_word = search_table[counter].findAll('div', {'id': str(index)})[0].select('span')[0].text
         english_word = search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
             0].text
-        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+        try:
+            chaser_word = search_table[counter].select('span[class*=chaser]')[0].text.replace('~', '').strip()
+        except IndexError:
+            chaser_word = np.nan
+        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word, chaser_word]).reshape(1, -1)
         temp_df = pd.DataFrame(temp_array,
                                columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                        'english_word'])
+                                        'english_word','chaser'])
         future_table = pd.concat([future_table, temp_df])
         if index in ['IMPF-1s', 'IMPF-1p']:
             # for feminine
@@ -115,10 +128,14 @@ def future_tense_verb(search_table):
             english_word = \
                 search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
                     0].text
-            temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+            try:
+                chaser_word = search_table[counter].select('span[class*=chaser]')[0].text.replace('~', '').strip()
+            except IndexError:
+                chaser_word = np.nan
+            temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word,chaser_word]).reshape(1, -1)
             temp_df = pd.DataFrame(temp_array,
                                    columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                            'english_word'])
+                                            'english_word','chaser'])
             future_table = pd.concat([future_table, temp_df])
         counter += 1
     return future_table
@@ -126,7 +143,7 @@ def future_tense_verb(search_table):
 
 def imperative_tense_verb(search_table):
     imperative_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                             'english_word'])
+                                             'english_word','chaser'])
 
     id_list = {'IMP-2ms': ['singular', 'masculine'], 'IMP-2fs': ['singular', 'feminine'],
                'IMP-2mp': ['plural', 'masculine'], 'IMP-2fp': ['plural', 'feminine']}
@@ -140,10 +157,14 @@ def imperative_tense_verb(search_table):
         hebrew_word = search_table[counter].findAll('div', {'id': str(index)})[0].select('span')[0].text
         english_word = search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
             0].text
+        try:
+            chaser_word = search_table[counter].select('span[class*=chaser]')[0].text.replace('~', '').strip()
+        except IndexError:
+            chaser_word = np.nan
 
-        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word,chaser_word]).reshape(1, -1)
         temp_df = pd.DataFrame(temp_array, columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                                    'english_word'])
+                                                    'english_word','chaser'])
         imperative_table = pd.concat([imperative_table, temp_df])
         counter += 1
     return imperative_table
@@ -151,7 +172,7 @@ def imperative_tense_verb(search_table):
 
 def passive_present_tense_verb(search_table):
     passive_present_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                                  'english_word'])
+                                                  'english_word','chaser'])
 
     id_list = {'passive-AP-ms': ['singular', 'masculine'], 'passive-AP-fs': ['singular', 'feminine'],
                'passive-AP-mp': ['plural', 'masculine'], 'passive-AP-fp': ['plural', 'feminine']}
@@ -164,14 +185,18 @@ def passive_present_tense_verb(search_table):
         gender = id_list[index][1]
         hebrew_word = search_table[counter].findAll('div', {'id': str(index)})[0].select('span')[0].text
         try:
-            english_word = search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
+            english_word = \
+            search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
                 0].text
         except IndexError:
             english_word = str(f'Passive form of {row["meaning"]}')
-
-        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+        try:
+            chaser_word = search_table[counter].select('span[class*=chaser]')[0].text.replace('~', '').strip()
+        except IndexError:
+            chaser_word = np.nan
+        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word,chaser_word]).reshape(1, -1)
         temp_df = pd.DataFrame(temp_array, columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                                    'english_word'])
+                                                    'english_word','chaser'])
         passive_present_table = pd.concat([passive_present_table, temp_df])
         counter += 1
 
@@ -180,7 +205,7 @@ def passive_present_tense_verb(search_table):
 
 def passive_past_tense_verb(search_table):
     passive_past_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                               'english_word'])
+                                               'english_word','chaser'])
     id_list = {'passive-PERF-1s': [1, 'singular', ['masculine', 'feminine']],
                'passive-PERF-1p': [1, 'plural', ['masculine', 'feminine']],
                'passive-PERF-2ms': [2, 'singular', 'masculine'], 'passive-PERF-2fs': [2, 'singular', 'feminine'],
@@ -201,14 +226,19 @@ def passive_past_tense_verb(search_table):
             gender = id_list[index][2][0]
         hebrew_word = search_table[counter].findAll('div', {'id': str(index)})[0].select('span')[0].text
         try:
-            english_word = search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
+            english_word = \
+            search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
                 0].text
         except IndexError:
             english_word = str(f'Passive form of {row["meaning"]}')
-        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+        try:
+            chaser_word = search_table[counter].select('span[class*=chaser]')[0].text.replace('~', '').strip()
+        except IndexError:
+            chaser_word = np.nan
+        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word,chaser_word]).reshape(1, -1)
         temp_df = pd.DataFrame(temp_array,
                                columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                        'english_word'])
+                                        'english_word','chaser'])
         past_table = pd.concat([passive_past_table, temp_df])
         if index in ['passive-PERF-1s', 'passive-PERF-1p', 'passive-PERF-3p']:
             # for feminine
@@ -216,14 +246,18 @@ def passive_past_tense_verb(search_table):
             hebrew_word = search_table[counter].findAll('div', {'id': str(index)})[0].select('span')[0].text
             try:
                 english_word = \
-                search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
-                    0].text
+                    search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
+                        0].text
             except IndexError:
                 english_word = str(f'Passive form of {row["meaning"]}')
-            temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+            try:
+                chaser_word = search_table[counter].select('span[class*=chaser]')[0].text.replace('~', '').strip()
+            except IndexError:
+                chaser_word = np.nan
+            temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word,chaser_word]).reshape(1, -1)
             temp_df = pd.DataFrame(temp_array,
                                    columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                            'english_word'])
+                                            'english_word','chaser'])
             passive_past_table = pd.concat([passive_past_table, temp_df])
         counter += 1
 
@@ -232,7 +266,7 @@ def passive_past_tense_verb(search_table):
 
 def passive_future_tense_verb(search_table):
     passive_future_table = pd.DataFrame(columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                                 'english_word'])
+                                                 'english_word','chaser'])
     id_list = {'passive-IMPF-1s': [1, 'singular', ['masculine', 'feminine']],
                'passive-IMPF-1p': [1, 'plural', ['masculine', 'feminine']],
                'passive-IMPF-2ms': [2, 'singular', 'masculine'], 'passive-IMPF-2fs': [2, 'singular', 'feminine'],
@@ -251,14 +285,19 @@ def passive_future_tense_verb(search_table):
             gender = id_list[index][2][0]
         hebrew_word = search_table[counter].findAll('div', {'id': str(index)})[0].select('span')[0].text
         try:
-            english_word = search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
+            english_word = \
+            search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
                 0].text
         except IndexError:
             english_word = str(f'Passive form of {row["meaning"]}')
-        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+        try:
+            chaser_word = search_table[counter].select('span[class*=chaser]')[0].text.replace('~', '').strip()
+        except IndexError:
+            chaser_word = np.nan
+        temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word,chaser_word]).reshape(1, -1)
         temp_df = pd.DataFrame(temp_array,
                                columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                        'english_word'])
+                                        'english_word','chaser'])
         passive_future_table = pd.concat([passive_future_table, temp_df])
         if index in ['passive-IMPF-1s', 'passive-IMPF-1p']:
             # for feminine
@@ -266,14 +305,18 @@ def passive_future_tense_verb(search_table):
             hebrew_word = search_table[counter].findAll('div', {'id': str(index)})[0].select('span')[0].text
             try:
                 english_word = \
-                search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
-                    0].text
+                    search_table[counter].findAll('div', {'id': str(index)})[0].findAll('div', {'class': 'meaning'})[
+                        0].text
             except IndexError:
                 english_word = str(f'Passive form of {row["meaning"]}')
-            temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+            try:
+                chaser_word = search_table[counter].select('span[class*=chaser]')[0].text.replace('~', '').strip()
+            except IndexError:
+                chaser_word = np.nan
+            temp_array = np.array([verb_form, person, form, gender, hebrew_word, english_word, chaser_word]).reshape(1, -1)
             temp_df = pd.DataFrame(temp_array,
                                    columns=['verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                            'english_word'])
+                                            'english_word','chaser'])
             passive_future_table = pd.concat([passive_future_table, temp_df])
         counter += 1
     return future_table
@@ -285,7 +328,8 @@ def single_noun(search_table):
                                                 'form',  # singular/plural
                                                 'gender',  # masc/fem
                                                 'hebrew_word',
-                                                'english_word'])
+                                                'english_word',
+                                                'chaser'])
     id_list = {'s-P-1s': ['singular', 1, 'singular', ['masculine', 'feminine']],
                's-P-2ms': ['singular', 2, 'singular', 'masculine'],
                's-P-2fs': ['singular', 2, 'singular', 'feminine'],
@@ -297,11 +341,11 @@ def single_noun(search_table):
                's-P-3mp': ['singular', 3, 'plural', 'masculine'],
                's-P-3fp': ['singular', 3, 'plural', 'feminine']}
 
-    #Checl which ID exists in search table
+    # Checl which ID exists in search table
     list_of_webpage_ids = []
-    for z in search_table.findAll('div', {'id':True}):
-        #print(z.attrs)
-        if len(z.attrs) ==2:
+    for z in search_table.findAll('div', {'id': True}):
+        # print(z.attrs)
+        if len(z.attrs) == 2:
             list_of_webpage_ids.append(list(z.attrs.values())[1])
         else:
             list_of_webpage_ids.append(list(z.attrs.values())[0])
@@ -310,7 +354,7 @@ def single_noun(search_table):
 
     list_of_webpage_ids = [item for item in list_of_webpage_ids if not item.startswith(substring)]
 
-    if not(list_of_webpage_ids - id_list.keys()):
+    if not (list_of_webpage_ids - id_list.keys()):
         print('Reducing id_list keys')
         id_list = {x: id_list[x] for x in list_of_webpage_ids if x in id_list}
         print(id_list)
@@ -326,9 +370,13 @@ def single_noun(search_table):
         hebrew_word = search_table.findAll('div', {'id': str(k)})[0].select('span')[0].text
         english_word = search_table.findAll('div', {'id': str(k)})[0].findAll('div', {'class': 'meaning'})[
             0].text
-        temp_array = np.array([noun_number, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+        try:
+            chaser_word = search_table.select('span[class*=chaser]')[0].text.replace('~', '').strip()
+        except IndexError:
+            chaser_word = np.nan
+        temp_array = np.array([noun_number, person, form, gender, hebrew_word, english_word, chaser_word]).reshape(1, -1)
         temp_df = pd.DataFrame(temp_array,
-                               columns=['noun_form', 'person', 'form', 'gender', 'hebrew_word', 'english_word'])
+                               columns=['noun_form', 'person', 'form', 'gender', 'hebrew_word', 'english_word','chaser'])
         pealim_pronomial_db = pd.concat([pealim_pronomial_db, temp_df])
         if k in ['s-P-1s', 's-P-1p', 'p-P-1s']:
             gender = v[3][1]
@@ -336,9 +384,13 @@ def single_noun(search_table):
             english_word = \
                 table_pronomial.findAll('div', {'id': str(k)})[0].findAll('div', {'class': 'meaning'})[
                     0].text
-            temp_array = np.array([noun_number, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+            try:
+                chaser_word = search_table.select('span[class*=chaser]')[0].text.replace('~', '').strip()
+            except IndexError:
+                chaser_word = np.nan
+            temp_array = np.array([noun_number, person, form, gender, hebrew_word, english_word,chaser_word]).reshape(1, -1)
             temp_df = pd.DataFrame(temp_array, columns=['noun_form', 'person', 'form', 'gender', 'hebrew_word',
-                                                        'english_word'])
+                                                        'english_word','chaser'])
             pealim_pronomial_db = pd.concat([pealim_pronomial_db, temp_df])
 
     return pealim_pronomial_db
@@ -350,18 +402,19 @@ def plural_noun(search_table):
                                                 'form',  # singular/plural
                                                 'gender',  # masc/fem
                                                 'hebrew_word',
-                                                'english_word'])
+                                                'english_word',
+                                                'chaser'])
     id_list = {'p-P-1s': ['plural', 1, 'plural', ['masculine', 'feminine']],
                'p-P-2ms': ['plural', 2, 'plural', 'masculine'],
                'p-P-2fs': ['plural', 2, 'plural', 'feminine'],
                'p-P-3ms': ['plural', 3, 'plural', 'masculine'],
                'p-P-3fs': ['plural', 3, 'plural', 'feminine']}
 
-    #Checl which ID exists in search table
+    # Checl which ID exists in search table
     list_of_webpage_ids = []
-    for z in search_table.findAll('div', {'id':True}):
-        #print(z.attrs)
-        if len(z.attrs) ==2:
+    for z in search_table.findAll('div', {'id': True}):
+        # print(z.attrs)
+        if len(z.attrs) == 2:
             list_of_webpage_ids.append(list(z.attrs.values())[1])
         else:
             list_of_webpage_ids.append(list(z.attrs.values())[0])
@@ -370,7 +423,7 @@ def plural_noun(search_table):
 
     list_of_webpage_ids = [item for item in list_of_webpage_ids if not item.startswith(substring)]
 
-    if not(list_of_webpage_ids - id_list.keys()):
+    if not (list_of_webpage_ids - id_list.keys()):
         print('Reducing id_list keys')
         id_list = {x: id_list[x] for x in list_of_webpage_ids if x in id_list}
         print(id_list)
@@ -386,9 +439,13 @@ def plural_noun(search_table):
         hebrew_word = search_table.findAll('div', {'id': str(k)})[0].select('span')[0].text
         english_word = search_table.findAll('div', {'id': str(k)})[0].findAll('div', {'class': 'meaning'})[
             0].text
-        temp_array = np.array([noun_number, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+        try:
+            chaser_word = search_table.select('span[class*=chaser]')[0].text.replace('~', '').strip()
+        except IndexError:
+            chaser_word = np.nan
+        temp_array = np.array([noun_number, person, form, gender, hebrew_word, english_word,chaser_word]).reshape(1, -1)
         temp_df = pd.DataFrame(temp_array,
-                               columns=['noun_form', 'person', 'form', 'gender', 'hebrew_word', 'english_word'])
+                               columns=['noun_form', 'person', 'form', 'gender', 'hebrew_word', 'english_word','chaser'])
         pealim_pronomial_db = pd.concat([pealim_pronomial_db, temp_df])
         if k in ['s-P-1s', 's-P-1p', 'p-P-1s']:
             gender = v[3][1]
@@ -396,9 +453,13 @@ def plural_noun(search_table):
             english_word = \
                 table_pronomial.findAll('div', {'id': str(k)})[0].findAll('div', {'class': 'meaning'})[
                     0].text
-            temp_array = np.array([noun_number, person, form, gender, hebrew_word, english_word]).reshape(1, -1)
+            try:
+                chaser_word = search_table.select('span[class*=chaser]')[0].text.replace('~', '').strip()
+            except IndexError:
+                chaser_word = np.nan
+            temp_array = np.array([noun_number, person, form, gender, hebrew_word, english_word,chaser_word]).reshape(1, -1)
             temp_df = pd.DataFrame(temp_array, columns=['noun_form', 'person', 'form', 'gender', 'hebrew_word',
-                                                        'english_word'])
+                                                        'english_word','chaser'])
             pealim_pronomial_db = pd.concat([pealim_pronomial_db, temp_df])
 
     return pealim_pronomial_db
@@ -417,23 +478,24 @@ pealim_pronomial_db = pd.DataFrame(columns=['noun_form',  # singular/plural
                                             'form',  # singular/plural
                                             'gender',  # masc/fem
                                             'hebrew_word',
-                                            'english_word'])
+                                            'english_word',
+                                            'chaser'])
 
 future_table = pd.DataFrame(columns=['id', 'verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                     'english_word'])
+                                     'english_word','chaser'])
 present_table = pd.DataFrame(columns=['id', 'verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                      'english_word'])
+                                      'english_word','chaser'])
 past_table = pd.DataFrame(columns=['id', 'verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                   'english_word'])
+                                   'english_word','chaser'])
 imperative_table = pd.DataFrame(columns=['id', 'verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                         'english_word'])
+                                         'english_word','chaser'])
 
 passive_future_table = pd.DataFrame(columns=['id', 'verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                             'english_word'])
+                                             'english_word','chaser'])
 passive_past_table = pd.DataFrame(columns=['id', 'verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                           'english_word'])
+                                           'english_word','chaser'])
 passive_present_table = pd.DataFrame(columns=['id', 'verb_form', 'person', 'form', 'gender', 'hebrew_word',
-                                              'english_word'])
+                                              'english_word','chaser'])
 
 s = requests.Session()
 retries = Retry(total=5, backoff_factor=1, status_forcelist=[502, 503, 504])
@@ -444,7 +506,6 @@ for index, row in pealim_database.iterrows():
     print(np.round(progress * 100))
     print(f'{index} / {len(pealim_database)}')
     print(row['word'])
-
 
     # If word is noun
     if 'Noun' in row['part_of_speech']:
