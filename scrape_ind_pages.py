@@ -319,7 +319,7 @@ def passive_future_tense_verb(search_table):
                                             'english_word','chaser'])
             passive_future_table = pd.concat([passive_future_table, temp_df])
         counter += 1
-    return future_table
+    return passive_future_table
 
 
 def single_noun(search_table):
