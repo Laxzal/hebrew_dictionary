@@ -298,13 +298,22 @@ def single_noun(search_table):
                's-P-3fp': ['singular', 3, 'plural', 'feminine']}
 
     #Checl which ID exists in search table
+    list_of_webpage_ids = []
     for z in search_table.findAll('div', {'id':True}):
-        print(z.attrs)
-        print('p-P-3fp' in z.attrs.values()
-              )
+        #print(z.attrs)
+        if len(z.attrs) ==2:
+            list_of_webpage_ids.append(list(z.attrs.values())[1])
+        else:
+            list_of_webpage_ids.append(list(z.attrs.values())[0])
 
+    substring = 'p-'
 
+    list_of_webpage_ids = [item for item in list_of_webpage_ids if not item.startswith(substring)]
 
+    if not(list_of_webpage_ids - id_list.keys()):
+        print('Reducing id_list keys')
+        id_list = {x: id_list[x] for x in list_of_webpage_ids if x in id_list}
+        print(id_list)
 
     for i, (k, v) in enumerate(id_list.items()):
         noun_number = v[0]
@@ -347,6 +356,25 @@ def plural_noun(search_table):
                'p-P-2fs': ['plural', 2, 'plural', 'feminine'],
                'p-P-3ms': ['plural', 3, 'plural', 'masculine'],
                'p-P-3fs': ['plural', 3, 'plural', 'feminine']}
+
+    #Checl which ID exists in search table
+    list_of_webpage_ids = []
+    for z in search_table.findAll('div', {'id':True}):
+        #print(z.attrs)
+        if len(z.attrs) ==2:
+            list_of_webpage_ids.append(list(z.attrs.values())[1])
+        else:
+            list_of_webpage_ids.append(list(z.attrs.values())[0])
+
+    substring = 's-'
+
+    list_of_webpage_ids = [item for item in list_of_webpage_ids if not item.startswith(substring)]
+
+    if not(list_of_webpage_ids - id_list.keys()):
+        print('Reducing id_list keys')
+        id_list = {x: id_list[x] for x in list_of_webpage_ids if x in id_list}
+        print(id_list)
+
     for i, (k, v) in enumerate(id_list.items()):
         noun_number = v[0]
         person = v[1]
