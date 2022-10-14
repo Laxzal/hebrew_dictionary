@@ -21,7 +21,7 @@ page_limit = int(page_limit.replace('?page=', ''))
 ###Acquire word, root, part of speech and meaning
 pealim_dataframe = pd.DataFrame(columns=['id', 'word','hebrew_pronunciation', 'root', 'part_of_speech', 'meaning', 'link'])
 
-for page in range(page_number, page_limit):
+for page in range(page_number, page_limit+1):
     time.sleep(0.5)
     print(f'page number: {page} / {page_limit}')
     response = requests.get(url + limit + str(page), headers={'User-Agent': user_agent})
