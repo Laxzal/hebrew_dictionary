@@ -98,7 +98,7 @@ def future_tense_verb(search_table):
                'IMPF-2ms': [2, 'singular', 'masculine'], 'IMPF-2fs': [2, 'singular', 'feminine'],
                'IMPF-2mp': [2, 'plural', 'masculine'], 'IMPF-2fp': [2, 'plural', 'feminine'],
                'IMPF-3ms': [3, 'singular', 'masculine'], 'IMPF-3fs': [3, 'singular', 'feminine'],
-               'IMPF-3mp': [3, 'plural', 'masculine'], 'IMPF-3fp': [3, 'singular', 'feminine']}
+               'IMPF-3mp': [3, 'plural', 'masculine'], 'IMPF-3fp': [3, 'plural', 'feminine']}
     verb_form = 'future'
     counter = 13
     for x in range(len(id_list)):
