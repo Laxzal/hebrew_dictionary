@@ -355,7 +355,7 @@ def single_adjective(search_table):
         english_word = search_table.findAll('div', {'id': str(k)})[0].findAll('div', {'class': 'meaning'})[
             0].text
         try:
-            chaser_word = search_table.select('span[class*=chaser]')[0].text.replace('~', '').strip()
+            chaser_word = search_table.findAll('div', {'id': str(k)})[0].select('span[class*=chaser]')[0].text.replace('~', '').strip()
         except IndexError:
             chaser_word = np.nan
         temp_array = np.array([form, gender, hebrew_word, english_word, chaser_word]).reshape(1, -1)
@@ -397,7 +397,7 @@ def plural_adjective(search_table):
         english_word = search_table.findAll('div', {'id': str(k)})[0].findAll('div', {'class': 'meaning'})[
             0].text
         try:
-            chaser_word = search_table.select('span[class*=chaser]')[0].text.replace('~', '').strip()
+            chaser_word = search_table.findAll('div', {'id': str(k)})[0].select('span[class*=chaser]')[0].text.replace('~', '').strip()
         except IndexError:
             chaser_word = np.nan
         temp_array = np.array([form, gender, hebrew_word, english_word, chaser_word]).reshape(1, -1)
@@ -459,7 +459,7 @@ def single_noun(search_table):
         english_word = search_table.findAll('div', {'id': str(k)})[0].findAll('div', {'class': 'meaning'})[
             0].text
         try:
-            chaser_word = search_table.select('span[class*=chaser]')[0].text.replace('~', '').strip()
+            chaser_word = search_table.findAll('div', {'id': str(k)})[0].select('span[class*=chaser]')[0].text.replace('~', '').strip()
         except IndexError:
             chaser_word = np.nan
         temp_array = np.array([noun_number, person, form, gender, hebrew_word, english_word, chaser_word]).reshape(1,
@@ -475,7 +475,7 @@ def single_noun(search_table):
                 table_pronomial.findAll('div', {'id': str(k)})[0].findAll('div', {'class': 'meaning'})[
                     0].text
             try:
-                chaser_word = search_table.select('span[class*=chaser]')[0].text.replace('~', '').strip()
+                chaser_word = search_table.findAll('div', {'id': str(k)})[0].select('span[class*=chaser]')[0].text.replace('~', '').strip()
             except IndexError:
                 chaser_word = np.nan
             temp_array = np.array([noun_number, person, form, gender, hebrew_word, english_word, chaser_word]).reshape(
@@ -531,7 +531,8 @@ def plural_noun(search_table):
         english_word = search_table.findAll('div', {'id': str(k)})[0].findAll('div', {'class': 'meaning'})[
             0].text
         try:
-            chaser_word = search_table.select('span[class*=chaser]')[0].text.replace('~', '').strip()
+            chaser_word = search_table.findAll('div', {'id': str(k)})[0].select('span[class*=chaser]')[0].text.replace('~', '').strip()
+            #print(chaser_word)
         except IndexError:
             chaser_word = np.nan
         temp_array = np.array([noun_number, person, form, gender, hebrew_word, english_word, chaser_word]).reshape(1,
@@ -547,7 +548,7 @@ def plural_noun(search_table):
                 table_pronomial.findAll('div', {'id': str(k)})[0].findAll('div', {'class': 'meaning'})[
                     0].text
             try:
-                chaser_word = search_table.select('span[class*=chaser]')[0].text.replace('~', '').strip()
+                chaser_word = search_table.findAll('div', {'id': str(k)})[0].select('span[class*=chaser]')[0].text.replace('~', '').strip()
             except IndexError:
                 chaser_word = np.nan
             temp_array = np.array([noun_number, person, form, gender, hebrew_word, english_word, chaser_word]).reshape(
