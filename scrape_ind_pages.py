@@ -564,7 +564,7 @@ url = 'https://www.pealim.com'
 
 pealim_database = pd.read_csv('pealim_database.csv')
 
-pealim_noun = pd.DataFrame(columns=['id', 'word', 'single_state', 'plural_state','single_construct_state',
+pealim_noun = pd.DataFrame(columns=['id', 'word', 'single_state', 'plural_state', 'single_construct_state',
                                     'plural_construct_state', 'meaning'])
 pealim_verb = pd.DataFrame(columns=['id', 'infinitive_form', 'meaning'])
 
@@ -647,7 +647,7 @@ for index, row in pealim_database.iterrows():
         except IndexError:
             plural_construct_state = np.nan
 
-        temp_array = np.array([row['id'], row['word'], single_state_word, plural_state,single_construct_state,
+        temp_array = np.array([row['id'], row['word'], single_state_word, plural_state, single_construct_state,
                                plural_construct_state, row['meaning']]).reshape(1, -1)
         temp_df = pd.DataFrame(temp_array, columns=['id', 'word', 'single_state', 'plural_state',
                                                     'single_construct_state', 'plural_construct_state', 'meaning'])
@@ -751,8 +751,8 @@ for index, row in pealim_database.iterrows():
         try:
             temp_df = plural_adjective(table_pronomial)
             temp_df.insert(0, 'id', row['id'])
-            pealim_adjective_db_db = pd.concat([pealim_adjective_db,
-                                                temp_df])
+            pealim_adjective_db = pd.concat([pealim_adjective_db,
+                                             temp_df])
         except IndexError:
             continue
 
@@ -766,4 +766,4 @@ imperative_table.to_csv('pealim_verb_imperative_table_db.csv', index=False)
 passive_future_table.to_csv('pealim_passive_future_table.csv', index=False)
 passive_present_table.to_csv('pealim_passive_present_table.csv', index=False)
 passive_past_table.to_csv('pealim_passive_past_table.csv', index=False)
-pealim_adjective_db.to_csv('pealim_adjective_table_db.csv',index=False)
+pealim_adjective_db.to_csv('pealim_adjective_table_db.csv', index=False)
