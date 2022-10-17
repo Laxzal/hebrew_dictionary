@@ -740,17 +740,21 @@ for index, row in pealim_database.iterrows():
         search_table = soup.findAll('td', {'class': 'conj-td'})
 
         table_pronomial = soup.findAll('tbody')[0]
+        try:
+            temp_df = single_adjective(table_pronomial)
+            temp_df.insert(0, 'id', row['id'])
 
-        temp_df = single_adjective(table_pronomial)
-        temp_df.insert(0, 'id', row['id'])
-
-        pealim_adjective_db = pd.concat([pealim_adjective_db,
-                                         temp_df])
-
-        temp_df = plural_adjective(table_pronomial)
-        temp_df.insert(0, 'id', row['id'])
-        pealim_adjective_db_db = pd.concat([pealim_adjective_db,
-                                            temp_df])
+            pealim_adjective_db = pd.concat([pealim_adjective_db,
+                                             temp_df])
+        except IndexError:
+            continue
+        try:
+            temp_df = plural_adjective(table_pronomial)
+            temp_df.insert(0, 'id', row['id'])
+            pealim_adjective_db_db = pd.concat([pealim_adjective_db,
+                                                temp_df])
+        except IndexError:
+            continue
 
 pealim_noun.to_csv('pealim_noun_db.csv', index=False)
 pealim_verb.to_csv('pealim_verb_db.csv', index=False)
